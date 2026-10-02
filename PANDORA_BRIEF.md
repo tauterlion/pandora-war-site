@@ -1,5 +1,20 @@
 # PANDORA WAR SERVER — WEBSITE BRIEF
 
+## Current structural and visual direction — October 1 revision
+
+The latest user-approved direction preserves the original visual foundation while replacing the long single-page information architecture. This section supersedes the earlier homepage, navigation and Mods-layout suggestions below.
+
+- Real routes: Overview (`/`), War System (`/war-system`), Factions (`/factions`), Mods (`/mods`), Rules (`/rules`), Setup (`/setup`). There is no separate Server route.
+- Overview contains the PANDORA hero, This Is Pandora, Field Specifications and Before It Begins. It ends with pathways to the other chapters; detailed objectives, Mods, factions and rules belong on their own routes.
+- Preserve the existing header, enormous hero, field-document typography, spacing, dark foundation, reusable media/components and accessibility work.
+- War System is tactical and mechanical. Factions is a neutral atmospheric dossier pending real identities. Rules is calm and document-like. Setup is a practical, intentionally pending preparation package.
+- Mods uses a focused moving selection rail. The whole list translates through a central selected position; distant entries fade, shrink and leave the viewport. Support wheel/trackpad, arrows, click and mobile swipe without trapping page navigation.
+- Each selected mod changes the surrounding abstract environment: terrain ridges, strata, communication rings, agricultural patterns, deep horizons, archival frames or system geometry. Content and media transition along with the atmosphere.
+- Add richer localized blue, violet, cyan, amber, red and green light. These are interface/environment accents, never invented faction identities.
+- Strengthen topographic contrast, deformation and local pointer response. The terrain should visibly react and settle rather than simply drift faster. Preserve reduced-motion behavior.
+- The final roster and complete expanded rules will be supplied by the user later. Do not treat supporting reference wording as authorization to fabricate or finalize those missing materials.
+- Each route is its own chapter; local numbering must not imply the old single 01–09 document.
+
 ## What Pandora is
 
 Pandora is a roughly one-week private Minecraft Java war server for a friend group, planned for Thanksgiving break.
@@ -532,3 +547,9 @@ Then ask:
 > Does this still make the information easy for the players to actually find?
 
 Both should be true.
+
+## October 2 targeted refinement
+
+The latest request supersedes pending expanded-rules wording above: the newer expanded-rules DOCX has now been supplied. Rules presents seven short mandatory core rules and seven optional, collapsed clarification groups.
+
+Mods uses a tall, unboxed selection tower with a dominant centered item, shrinking/fading neighbors, and whole-list translation. Background environments blend directly over an opaque outgoing atmosphere; there must be no intermediate black frame. Text and selected media use a separate staged entrance. Keep the supplied mod media, local palette, keyboard/wheel/swipe controls, reduced-motion support, and all other routes intact.

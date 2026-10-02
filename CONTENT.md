@@ -297,3 +297,11 @@ Do not invent:
 - final screenshots
 - trailer assets
 - live website API
+
+## October 2 rules and media update
+
+The user supplied the expanded rules and authorized a condensed Rules page. For rules, `references/Pandora War Server (v0.2) (1).docx` supersedes the older reference and the earlier “once added” / pending wording above. `src/content/rules.ts` contains seven core rules and seven optional clarification groups, with source section numbers for review.
+
+Clarifications cover raids/griefing, offline bases, stealing/surrender, traps/spawn camping, alliances/betrayal/spying, objectives, and admin rulings/server integrity. Remote unattended structures remain case-dependent; ask the server manager when uncertain. Final independent-player details remain subject to clarification before launch. Do not invent fixed recovery timers, destruction limits, or penalties.
+
+The supplied mod images and three videos are now available under `public/media/mods/` and connected to all eight candidate entries. They are mod previews/illustrations, not proof of the final Pandora map. Final world screenshots and trailer remain pending.
