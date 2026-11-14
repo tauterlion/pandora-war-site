@@ -1,1 +1,43 @@
-{ "rewrites": [{ "source": "/((?!assets/|favicon.svg|media/).*)", "destination": "/index.html" }] }
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "buildCommand": "",
+  "installCommand": "",
+  "outputDirectory": "public",
+  "trailingSlash": false,
+  "cleanUrls": false,
+  "rewrites": [
+    {
+      "source": "/war-system",
+      "destination": "/legacy/war-system.html"
+    },
+    {
+      "source": "/mods",
+      "destination": "/legacy/mods.html"
+    },
+    {
+      "source": "/setup",
+      "destination": "/legacy/setup.html"
+    },
+    {
+      "source": "/factions",
+      "destination": "/legacy/factions.html"
+    },
+    {
+      "source": "/rules",
+      "destination": "/legacy/rules.html"
+    },
+    {
+      "source": "/campaign",
+      "destination": "/legacy/campaign.html"
+    },
+    {
+      "source": "/objectives",
+      "destination": "/legacy/objectives.html"
+    },
+    {
+      "source": "/installation",
+      "destination": "/legacy/installation.html"
+    }
+  ]
+}
