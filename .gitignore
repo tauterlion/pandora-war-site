@@ -1,6 +1,4 @@
+.vercel/
 node_modules/
-dist/
-.npm-cache/
-test-results/
-playwright-report/
-*.local
+.DS_Store
+Thumbs.db
