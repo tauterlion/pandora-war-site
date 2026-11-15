@@ -57,3 +57,6 @@
 @container(max-width:680px){.edition-grid{grid-template-columns:1fr}.edition-card{padding:16px;gap:10px}.edition-heading{min-height:0}.edition-card .edition-description{min-height:0}.edition-specs{grid-template-columns:1fr 1fr;column-gap:16px}.edition-figure .install-shot img{max-height:none}.edition-download{margin-top:6px}}
 @media(max-width:700px){.edition-grid{grid-template-columns:1fr}.edition-card{padding:16px;gap:10px}.edition-heading{min-height:0}.edition-card .edition-description{min-height:0}.edition-specs{grid-template-columns:1fr 1fr;column-gap:16px}.edition-download{margin-top:6px}}
 @media(max-width:380px){.edition-specs{grid-template-columns:1fr}}
+
+/* Preview refinements: recommendation stays in the kicker row, never shifting card content. */
+.edition-section .edition-intro{margin:12px 0 0}.edition-heading{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto;align-content:start;align-items:center;gap:4px 6px;min-height:44px}.edition-heading h3{grid-column:1/-1;grid-row:2;margin:0;line-height:1.2}.edition-heading .install-kicker{grid-column:1;grid-row:1;line-height:1.4}.edition-recommended{grid-column:2;grid-row:1;margin:0;line-height:1.4;font-size:10px;white-space:nowrap}.server-unavailable{color:var(--muted);background:#202823;border-color:var(--line)}
