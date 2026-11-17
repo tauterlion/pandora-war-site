@@ -89,3 +89,20 @@
 #main:has(.layout:not([hidden])) .sidebar-links a[aria-current=page]{background:#242e26ee}
 @media(max-width:850px){.guide-backdrops{height:480px}.guide-backdrops::after{background:linear-gradient(180deg,rgba(16,20,18,.80) 0%,rgba(16,20,18,.88) 48%,var(--bg) 100%)}}
 @media(prefers-reduced-motion:reduce){.guide-backdrop,.hero-route-cover{transition:none!important}.hero-slide.is-active,.hero-slide.is-leaving{animation:none!important;transform:none}}
+
+
+/* Scheduled launch countdown — total hours, independent of viewer time zone. */
+.hero-inner{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:28px}
+.hero-copy{min-width:0}
+.launch-countdown{width:clamp(252px,27vw,320px);padding:19px 20px 17px;border:1px solid #a8b89455;border-radius:8px;background:#101412b8;backdrop-filter:blur(10px);box-shadow:0 6px 28px #0003;text-align:left}
+.launch-countdown-kicker{margin:0 0 11px;color:var(--accent);font-size:10px;font-weight:750;letter-spacing:.17em}
+.launch-countdown-clock{display:grid;grid-template-columns:minmax(0,1.25fr) auto minmax(0,1fr) auto minmax(0,1fr);align-items:start;gap:7px;line-height:1}
+.launch-countdown-unit{display:flex;flex-direction:column;gap:8px;align-items:center;min-width:0}
+.launch-countdown-unit>span,.launch-countdown-colon{font-size:clamp(29px,3.3vw,40px);font-weight:780;font-variant-numeric:tabular-nums;letter-spacing:-.055em;color:var(--text)}
+.launch-countdown-colon{color:var(--muted);font-weight:400;opacity:.75}
+.launch-countdown-unit small{font-size:9px;letter-spacing:.09em;font-weight:650;color:var(--muted)}
+.launch-countdown-date{margin:15px 0 0;padding-top:12px;border-top:1px solid #a8b89433;font-size:12px;color:#d8e1d2;white-space:nowrap}
+.launch-countdown-status{font-size:12px;color:var(--muted);margin:10px 0 0;line-height:1.45}
+.launch-countdown-status[hidden]{display:none}
+@media(max-width:850px){.hero-inner{grid-template-columns:1fr;gap:22px}.launch-countdown{width:min(320px,100%)}}
+@media(max-width:500px){.launch-countdown{padding:15px 17px}.launch-countdown-clock{gap:6px}.hero-inner{padding-bottom:60px}}
