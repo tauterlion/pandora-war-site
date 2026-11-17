@@ -76,18 +76,16 @@
 @media(max-width:500px){.campaign-timeline{padding:15px}.timeline-heading{flex-direction:column;gap:5px;margin-bottom:15px}.campaign-timeline .timeline-heading h3{font-size:22px}.timeline-dates{padding:0}.timeline-phases{grid-template-columns:1fr;gap:16px}.article .timeline-day{padding:8px 6px;min-height:106px}.timeline-day-top{flex-direction:column}.timeline-number{font-size:24px}.timeline-month{font-size:8px}.timeline-label{font-size:10px}.timeline-legend{gap:5px 12px}.timeline-end-note{padding:10px}}
 
 
-/* Atmospheric guide-page backdrops. Reuse the campaign's existing photographs. */
+/* Atmospheric guide-page backdrops with persistent crossfade layers. */
 #main{position:relative;isolation:isolate}
-#main:has(#campaign:not([hidden])){--guide-photo:url("photo-02.webp");--guide-position:50% 43%}
-#main:has(#factions:not([hidden])){--guide-photo:url("photo-04.webp");--guide-position:50% 45%}
-#main:has(#objectives:not([hidden])){--guide-photo:url("photo-01.webp");--guide-position:50% 48%}
-#main:has(#rules:not([hidden])){--guide-photo:url("photo-06.webp");--guide-position:50% 45%}
-#main:has(#installation:not([hidden])){--guide-photo:url("photo-05.webp");--guide-position:50% 47%}
-#main:has(.layout:not([hidden]))::before{
-  content:"";position:absolute;inset:0 0 auto;height:clamp(420px,52vw,680px);z-index:-1;pointer-events:none;
-  background-image:linear-gradient(180deg,rgba(16,20,18,.12) 0%,rgba(16,20,18,.40) 37%,var(--bg) 100%),linear-gradient(90deg,rgba(16,20,18,.92) 0%,rgba(16,20,18,.83) 45%,rgba(16,20,18,.66) 100%),var(--guide-photo);
-  background-size:cover;background-position:var(--guide-position,center);
-}
+.guide-backdrops{position:absolute;inset:0 0 auto;height:clamp(420px,52vw,680px);z-index:-1;pointer-events:none;overflow:hidden;background:var(--bg)}
+.guide-backdrops[hidden]{display:none}
+.guide-backdrop{position:absolute;inset:0;opacity:0;background-size:cover;background-position:center;transition:opacity .75s ease-in-out}
+.guide-backdrop.is-active{opacity:1}
+.guide-backdrops::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(16,20,18,.12) 0%,rgba(16,20,18,.40) 37%,var(--bg) 100%),linear-gradient(90deg,rgba(16,20,18,.92) 0%,rgba(16,20,18,.83) 45%,rgba(16,20,18,.66) 100%);pointer-events:none}
+.guide-backdrops.is-instant .guide-backdrop,.hero-route-cover.is-instant{transition:none!important}
+.hero-route-cover{position:absolute;inset:0;z-index:3;opacity:0;pointer-events:none;background-size:cover;background-position:center;transition:opacity .75s ease-in-out}
+.hero-route-cover.is-visible{opacity:1}
 #main:has(.layout:not([hidden])) .sidebar-links a[aria-current=page]{background:#242e26ee}
-@media(max-width:850px){#main:has(.layout:not([hidden]))::before{height:480px;background-image:linear-gradient(180deg,rgba(16,20,18,.80) 0%,rgba(16,20,18,.88) 48%,var(--bg) 100%),var(--guide-photo)}}
-@media(prefers-reduced-motion:reduce){.hero-slide.is-active,.hero-slide.is-leaving{animation:none!important;transform:none}}
+@media(max-width:850px){.guide-backdrops{height:480px}.guide-backdrops::after{background:linear-gradient(180deg,rgba(16,20,18,.80) 0%,rgba(16,20,18,.88) 48%,var(--bg) 100%)}}
+@media(prefers-reduced-motion:reduce){.guide-backdrop,.hero-route-cover{transition:none!important}.hero-slide.is-active,.hero-slide.is-leaving{animation:none!important;transform:none}}
