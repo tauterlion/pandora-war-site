@@ -62,3 +62,169 @@ heroPause.addEventListener('click',()=>{heroPaused=!heroPaused;updateHeroTimer()
 const copyAddress=document.getElementById('copyAddress');const copyStatus=document.getElementById('copyStatus');if(copyAddress&&copyStatus&&document.getElementById('serverAddress'))copyAddress.addEventListener('click',async()=>{const value=document.getElementById('serverAddress').textContent.trim();let ok=false;try{if(navigator.clipboard){await navigator.clipboard.writeText(value);ok=true;}}catch{}if(!ok){const input=document.createElement('textarea');input.value=value;input.style.cssText='position:fixed;left:-9999px;top:0';document.body.append(input);input.select();try{ok=document.execCommand('copy')}catch{}input.remove();}copyStatus.textContent=ok?'Server address copied.':'Copy unavailable — select the address manually.';copyAddress.querySelector('span').textContent=ok?'Copied':'Copy';if(ok)setTimeout(()=>{copyAddress.querySelector('span').textContent='Copy';copyStatus.textContent='';},2500);});
 // Sequential reading links, without introducing extra pages.
 pages.slice(1).forEach(([id],i)=>{const article=document.querySelector('#'+id+' .article'),prev=pages[i],next=pages[i+2],nav=document.createElement('nav');nav.className='guide-page-nav';nav.setAttribute('aria-label','Continue reading');nav.innerHTML=`<a href="#${prev[0]}"><span>← Previous</span><strong>${prev[1]}</strong></a>`+(next?`<a href="#${next[0]}"><span>Next →</span><strong>${next[1]}</strong></a>`:'');article.append(nav);});
+
+
+function renderLaunchDigits(element,value,animate){
+  const previous=element.dataset.value;
+  if(previous===value)return;
+  const oldSlots=Array.from(element.children);
+  const slots=[];
+  // Align by place value even when the hours lose a leading digit.
+  for(let i=0;i<value.length;i++){
+    const oldIndex=oldSlots.length-value.length+i;
+    const slot=oldIndex>=0?oldSlots[oldIndex]:document.createElement('span');
+    slot.className='launch-digit';
+    slot.setAttribute('aria-hidden','true');
+    const oldValue=previous?.[previous.length-value.length+i];
+    if(!slot.children.length||oldValue!==value[i]){
+      const next=document.createElement('span');
+      next.textContent=value[i];
+      next.className='launch-digit-face';
+      if(animate&&oldValue!==undefined){
+        const outgoing=document.createElement('span');
+        outgoing.className='launch-digit-face launch-digit-out';
+        outgoing.textContent=oldValue;
+        next.classList.add('launch-digit-in');
+        slot.replaceChildren(outgoing,next);
+      }else slot.replaceChildren(next);
+    }
+    slots.push(slot);
+  }
+  if(oldSlots.length!==slots.length||slots.some((slot,i)=>slot!==oldSlots[i]))element.replaceChildren(...slots);
+  element.dataset.value=value;
+}
+
+// Countdown uses an absolute AST timestamp rather than the visitor's local date.
+const launchTarget=document.getElementById('launch-target');
+if(launchTarget){
+  const deadline=Date.parse(launchTarget.dateTime);
+  const hours=document.getElementById('launch-hours'),minutes=document.getElementById('launch-minutes'),seconds=document.getElementById('launch-seconds');
+  const status=document.getElementById('launch-countdown-status'),heading=document.getElementById('launch-countdown-heading');
+  const launchDigitMotion=matchMedia('(prefers-reduced-motion: reduce)');
+  const launchClock=document.querySelector('.launch-countdown-clock');
+  const footerLaunchCountdown=document.getElementById('footer-launch-countdown');
+  const footerLaunchLabel=document.getElementById('footer-launch-label');
+  const footerLaunchTime=document.getElementById('footer-launch-time');
+  function updateFooterLaunchVisibility(){
+    footerLaunchCountdown.hidden=!document.getElementById('home').hidden;
+  }
+  window.addEventListener('hashchange',updateFooterLaunchVisibility);
+  updateFooterLaunchVisibility();
+  let lastLaunchRemaining=null;
+  let launchTimer=null;
+  function updateLaunchCountdown(){
+    const remaining=Math.max(0,Math.ceil((deadline-Date.now())/1000));
+    const values=[Math.floor(remaining/3600),Math.floor(remaining/60)%60,remaining%60];
+    const animate=!launchDigitMotion.matches&&!document.hidden&&!document.getElementById('home').hidden&&!document.querySelector('.launch-countdown').classList.contains('is-paused');
+    [hours,minutes,seconds].forEach((element,i)=>renderLaunchDigits(element,String(values[i]).padStart(2,'0'),animate));
+    if(remaining!==lastLaunchRemaining){
+      const accessibleTime='Time until scheduled launch: '+values[0]+' hours, '+values[1]+' minutes, '+values[2]+' seconds';
+      launchClock.setAttribute('aria-label',accessibleTime);
+      footerLaunchTime.textContent=values.map(value=>String(value).padStart(2,'0')).join(':');
+      footerLaunchTime.setAttribute('aria-label',accessibleTime);
+      footerLaunchLabel.textContent=remaining===0?'Scheduled launch time reached':'Launch in';
+      footerLaunchTime.hidden=remaining===0;
+      lastLaunchRemaining=remaining;
+    }
+    if(remaining===0){
+      heading.textContent='SCHEDULED LAUNCH';status.hidden=false;
+      if(launchTimer!==null){clearInterval(launchTimer);launchTimer=null;}
+    }
+    return remaining;
+  }
+  if(updateLaunchCountdown()>0)launchTimer=setInterval(updateLaunchCountdown,250);
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)updateLaunchCountdown();});
+  window.addEventListener('pageshow',updateLaunchCountdown);
+}
+
+// Wind simulation: shared gusts, local eddies and independent particle inertia.
+function createCountdownWind(canvas){
+  const ctx=canvas.getContext('2d');
+  if(!ctx)return {setRunning(){}};
+  const rand=(a,b)=>a+Math.random()*(b-a);
+  const colors=['#e3e9ca','#b6cbaa','#e4c589','#8db5aa','#d6deba'];
+  let w=0,h=0,ratio=1,particles=[],frame=null,last=null,time=0,running=false;
+  function spawn(p,initial=false){
+    p.depth=rand(.35,1.3);p.phase=rand(0,Math.PI*2);p.spin=rand(.8,3.7);
+    p.size=rand(.6,1.75)*p.depth;p.alpha=rand(.2,.78);p.color=colors[Math.floor(rand(0,colors.length))];
+    if(initial){p.x=rand(0,w);p.y=rand(0,h);}
+    else if(Math.random()<.75){p.x=rand(-65,-5);p.y=rand(-h*.1,h*1.2);}
+    else{p.x=rand(-w*.12,w*.86);p.y=h+rand(5,60);}
+    p.vx=rand(90,230)*p.depth;p.vy=rand(-90,25)*p.depth;
+    return p;
+  }
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    for(const p of particles){
+      const speed=Math.hypot(p.vx,p.vy)||1;
+      const trail=Math.min(24,speed*.035)*p.depth;
+      const dx=p.vx/speed*trail,dy=p.vy/speed*trail;
+      ctx.strokeStyle=p.color;ctx.fillStyle=p.color;ctx.lineWidth=p.size;
+      ctx.globalAlpha=p.alpha*.52;ctx.beginPath();ctx.moveTo(p.x-dx,p.y-dy);ctx.lineTo(p.x,p.y);ctx.stroke();
+      ctx.globalAlpha=p.alpha;ctx.beginPath();ctx.arc(p.x,p.y,p.size*.48,0,Math.PI*2);ctx.fill();
+    }
+    ctx.globalAlpha=1;
+  }
+  function resize(){
+    const bounds=canvas.getBoundingClientRect();
+    if(bounds.width<1||bounds.height<1)return;
+    w=bounds.width;h=bounds.height;ratio=Math.min(window.devicePixelRatio||1,1.5);
+    canvas.width=Math.round(w*ratio);canvas.height=Math.round(h*ratio);ctx.setTransform(ratio,0,0,ratio,0,0);
+    const count=Math.max(55,Math.min(220,Math.round(w*h/2300)));
+    particles=Array.from({length:count},()=>spawn({},true));draw();
+  }
+  function animate(now){
+    frame=null;
+    if(!running)return;
+    const dt=last===null?0:Math.min(.04,(now-last)/1000);last=now;time+=dt;
+    // Gusts build and collapse; turbulence varies with location and each particle's depth.
+    const gust=180+135*Math.pow(.5+.5*Math.sin(time*1.16),3)+85*Math.pow(.5+.5*Math.sin(time*2.37+1.4),4);
+    for(const p of particles){
+      const eddy=Math.sin(p.x*.009+p.y*.018-time*2.1+p.phase);
+      const cross=Math.cos(p.y*.025-p.x*.007+time*1.45+p.phase);
+      const targetX=(gust+92*eddy+47*Math.sin(time*p.spin+p.phase))*p.depth;
+      const targetY=(-48+115*cross+60*Math.sin(time*2.5+p.phase)+.16*(180-gust))*p.depth;
+      const response=Math.min(1,dt*(2.2+p.depth*2));
+      p.vx+=(targetX-p.vx)*response;p.vy+=(targetY-p.vy)*response;
+      p.x+=p.vx*dt;p.y+=p.vy*dt;
+      if(p.x>w+70||p.x<-100||p.y<-100||p.y>h+100)spawn(p);
+    }
+    draw();frame=requestAnimationFrame(animate);
+  }
+  function setRunning(value){
+    if(value===running)return;
+    running=value;last=null;
+    if(running){if(!w||!h)resize();frame=requestAnimationFrame(animate);}
+    else if(frame!==null){cancelAnimationFrame(frame);frame=null;}
+  }
+  if(typeof ResizeObserver==='function')new ResizeObserver(resize).observe(canvas);
+  else window.addEventListener('resize',resize);
+  resize();
+  return {setRunning};
+}
+
+// Pause both background layers and the canvas outside the visible home page.
+const countdownSection=document.querySelector('.launch-countdown');
+const countdownPause=document.querySelector('.countdown-pause');
+if(countdownSection&&countdownPause){
+  const countdownMotion=matchMedia('(prefers-reduced-motion: reduce)');
+  const countdownCanvas=countdownSection.querySelector('.countdown-wind');
+  const wind=countdownCanvas?createCountdownWind(countdownCanvas):{setRunning(){}};
+  let countdownPaused=false,countdownVisible=true;
+  function updateCountdownAtmosphere(){
+    const paused=countdownPaused||countdownMotion.matches;
+    const running=!paused&&!document.hidden&&!document.getElementById('home').hidden&&countdownVisible;
+    countdownSection.classList.toggle('is-paused',!running);
+    wind.setRunning(running);
+    countdownPause.innerHTML=paused?playIcon:pauseIcon;
+    countdownPause.setAttribute('aria-label',paused?'Play countdown background animation':'Pause countdown background animation');
+    countdownPause.title=countdownPause.getAttribute('aria-label');
+    countdownPause.hidden=countdownMotion.matches;
+  }
+  countdownPause.addEventListener('click',()=>{countdownPaused=!countdownPaused;updateCountdownAtmosphere();});
+  countdownMotion.addEventListener('change',updateCountdownAtmosphere);
+  document.addEventListener('visibilitychange',updateCountdownAtmosphere);
+  window.addEventListener('hashchange',updateCountdownAtmosphere);
+  if(typeof IntersectionObserver==='function')new IntersectionObserver(entries=>{countdownVisible=entries[0].isIntersecting;updateCountdownAtmosphere();}).observe(countdownSection);
+  updateCountdownAtmosphere();
+}
