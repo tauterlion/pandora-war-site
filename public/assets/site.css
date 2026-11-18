@@ -127,13 +127,18 @@
 .launch-countdown-unit>span{display:inline-flex;align-items:center;justify-content:center;line-height:1.12}
 .launch-countdown-colon{line-height:1.12}
 .launch-digit{display:block;position:relative;width:1ch;height:1.12em;overflow:hidden;flex:none;mask-image:linear-gradient(to bottom,transparent 0%,#000 15%,#000 85%,transparent 100%);-webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 15%,#000 85%,transparent 100%)}
-.launch-digit-face{display:block;position:absolute;inset:0;text-align:center;line-height:1.12}
-.launch-digit-in{animation:launch-digit-enter .36s cubic-bezier(.2,.7,.25,1) both}
+.launch-countdown-unit>span{text-shadow:none;filter:drop-shadow(0 0 9px rgba(205,219,170,.13)) drop-shadow(0 0 22px rgba(205,219,170,.08))}
+.launch-digit-face{display:block;position:absolute;inset:0;text-align:center;line-height:1.12;text-shadow:0 0 12px rgba(228,230,185,.12),0 0 30px rgba(202,219,179,.08),0 3px 20px rgba(0,0,0,.35)}
+.launch-digit-in{animation:launch-digit-enter .36s cubic-bezier(.2,.7,.25,1) both,launch-digit-glow .74s ease-in-out both}
 .launch-digit-out{animation:launch-digit-exit .36s cubic-bezier(.2,.7,.25,1) both}
 @keyframes launch-digit-enter{
   0%{transform:translateY(-100%);opacity:0}
-  72%{transform:translateY(-3%);opacity:1;text-shadow:0 0 20px #e4e6b97a,0 3px 12px #0007}
-  100%{transform:translateY(0);opacity:1;text-shadow:inherit}
+  72%{transform:translateY(-3%);opacity:1}
+  100%{transform:translateY(0);opacity:1}
+}
+@keyframes launch-digit-glow{
+  0%,100%{text-shadow:0 0 12px rgba(228,230,185,.12),0 0 30px rgba(202,219,179,.08),0 3px 20px rgba(0,0,0,.35)}
+  42%{text-shadow:0 0 18px rgba(228,230,185,.28),0 0 42px rgba(202,219,179,.16),0 3px 20px rgba(0,0,0,.35)}
 }
 @keyframes launch-digit-exit{
   from{transform:translateY(0);opacity:1}
