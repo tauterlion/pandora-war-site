@@ -123,13 +123,22 @@
 @media(max-width:500px){.countdown-pause{bottom:9px;right:10px;width:27px;height:27px}.countdown-pause svg{width:13px;height:13px}.launch-countdown{padding-bottom:43px}}
 @media(prefers-reduced-motion:reduce){.countdown-atmosphere>div{animation:none!important;transform:none!important}.countdown-pause{display:none!important}}
 
-/* Downward odometer motion: only the changed place values roll. */
+/* Cinematic mechanical countdown: weighted fall, velocity blur, soft landing. */
 .launch-countdown-unit>span{display:inline-flex;align-items:center;justify-content:center;line-height:1.12}
 .launch-countdown-colon{line-height:1.12}
 .launch-digit{display:block;position:relative;width:1ch;height:1.12em;overflow:hidden;flex:none}
 .launch-digit-face{display:block;position:absolute;inset:0;text-align:center;line-height:1.12}
-.launch-digit-in{animation:launch-digit-enter .36s cubic-bezier(.2,.7,.25,1) both}
-.launch-digit-out{animation:launch-digit-exit .36s cubic-bezier(.2,.7,.25,1) both}
-@keyframes launch-digit-enter{from{transform:translateY(-100%);opacity:.65}to{transform:translateY(0);opacity:1}}
-@keyframes launch-digit-exit{from{transform:translateY(0);opacity:1}to{transform:translateY(100%);opacity:.65}}
-@media(prefers-reduced-motion:reduce){.launch-digit-in{animation:none!important;transform:none!important}.launch-digit-out{display:none!important}}
+.launch-digit-in{animation:launch-digit-enter .58s linear both}
+.launch-digit-out{animation:launch-digit-exit .58s linear both}
+@keyframes launch-digit-enter{
+  0%{transform:translateY(-108%);opacity:.45;filter:blur(3px);animation-timing-function:cubic-bezier(.5,.02,.72,.55)}
+  50%{transform:translateY(-47%);opacity:.94;filter:blur(1.7px);animation-timing-function:cubic-bezier(.16,.72,.28,1)}
+  76%{transform:translateY(6%);opacity:1;filter:blur(0);text-shadow:0 0 22px #e4e6b97a,0 3px 12px #0007;animation-timing-function:cubic-bezier(.2,.75,.3,1)}
+  100%{transform:translateY(0);opacity:1;filter:blur(0);text-shadow:inherit}
+}
+@keyframes launch-digit-exit{
+  0%{transform:translateY(0);opacity:1;filter:blur(0);animation-timing-function:cubic-bezier(.5,.02,.72,.55)}
+  50%{transform:translateY(61%);opacity:.66;filter:blur(2px);animation-timing-function:cubic-bezier(.16,.72,.28,1)}
+  76%,100%{transform:translateY(114%);opacity:0;filter:blur(3px)}
+}
+@media(prefers-reduced-motion:reduce){.launch-digit-in{animation:none!important;transform:none!important;filter:none!important}.launch-digit-out{display:none!important}}
