@@ -64,18 +64,55 @@ const copyAddress=document.getElementById('copyAddress');const copyStatus=docume
 pages.slice(1).forEach(([id],i)=>{const article=document.querySelector('#'+id+' .article'),prev=pages[i],next=pages[i+2],nav=document.createElement('nav');nav.className='guide-page-nav';nav.setAttribute('aria-label','Continue reading');nav.innerHTML=`<a href="#${prev[0]}"><span>← Previous</span><strong>${prev[1]}</strong></a>`+(next?`<a href="#${next[0]}"><span>Next →</span><strong>${next[1]}</strong></a>`:'');article.append(nav);});
 
 
+function renderLaunchDigits(element,value,animate){
+  const previous=element.dataset.value;
+  if(previous===value)return;
+  const oldSlots=Array.from(element.children);
+  const slots=[];
+  // Align by place value even when the hours lose a leading digit.
+  for(let i=0;i<value.length;i++){
+    const oldIndex=oldSlots.length-value.length+i;
+    const slot=oldIndex>=0?oldSlots[oldIndex]:document.createElement('span');
+    slot.className='launch-digit';
+    slot.setAttribute('aria-hidden','true');
+    const oldValue=previous?.[previous.length-value.length+i];
+    if(!slot.children.length||oldValue!==value[i]){
+      const next=document.createElement('span');
+      next.textContent=value[i];
+      next.className='launch-digit-face';
+      if(animate&&oldValue!==undefined){
+        const outgoing=document.createElement('span');
+        outgoing.className='launch-digit-face launch-digit-out';
+        outgoing.textContent=oldValue;
+        next.classList.add('launch-digit-in');
+        slot.replaceChildren(outgoing,next);
+      }else slot.replaceChildren(next);
+    }
+    slots.push(slot);
+  }
+  if(oldSlots.length!==slots.length||slots.some((slot,i)=>slot!==oldSlots[i]))element.replaceChildren(...slots);
+  element.dataset.value=value;
+}
+
 // Countdown uses an absolute AST timestamp rather than the visitor's local date.
 const launchTarget=document.getElementById('launch-target');
 if(launchTarget){
   const deadline=Date.parse(launchTarget.dateTime);
   const hours=document.getElementById('launch-hours'),minutes=document.getElementById('launch-minutes'),seconds=document.getElementById('launch-seconds');
   const status=document.getElementById('launch-countdown-status'),heading=document.getElementById('launch-countdown-heading');
+  const launchDigitMotion=matchMedia('(prefers-reduced-motion: reduce)');
+  const launchClock=document.querySelector('.launch-countdown-clock');
+  let lastLaunchRemaining=null;
   let launchTimer=null;
   function updateLaunchCountdown(){
     const remaining=Math.max(0,Math.ceil((deadline-Date.now())/1000));
-    hours.textContent=String(Math.floor(remaining/3600)).padStart(2,'0');
-    minutes.textContent=String(Math.floor(remaining/60)%60).padStart(2,'0');
-    seconds.textContent=String(remaining%60).padStart(2,'0');
+    const values=[Math.floor(remaining/3600),Math.floor(remaining/60)%60,remaining%60];
+    const animate=!launchDigitMotion.matches&&!document.hidden&&!document.getElementById('home').hidden&&!document.querySelector('.launch-countdown').classList.contains('is-paused');
+    [hours,minutes,seconds].forEach((element,i)=>renderLaunchDigits(element,String(values[i]).padStart(2,'0'),animate));
+    if(remaining!==lastLaunchRemaining){
+      launchClock.setAttribute('aria-label','Time until scheduled launch: '+values[0]+' hours, '+values[1]+' minutes, '+values[2]+' seconds');
+      lastLaunchRemaining=remaining;
+    }
     if(remaining===0){
       heading.textContent='SCHEDULED LAUNCH';status.hidden=false;
       if(launchTimer!==null){clearInterval(launchTimer);launchTimer=null;}
