@@ -105,19 +105,18 @@
 .launch-countdown-status[hidden]{display:none}
 @media(max-width:500px){.launch-countdown{padding:30px 16px 28px}.launch-countdown-kicker{font-size:10px;margin-bottom:16px;letter-spacing:.19em}.launch-countdown-clock{gap:7px}.launch-countdown-unit{gap:9px}.launch-countdown-unit>span,.launch-countdown-colon{font-size:clamp(38px,11vw,58px)}.launch-countdown-unit small{font-size:9px;letter-spacing:.1em}.launch-countdown-date{font-size:12px;margin-top:19px}}
 
-/* Countdown atmosphere: independent, slowly drifting aurora and dust. */
-.launch-countdown{isolation:isolate;background:#101a18}
-.launch-countdown::before{z-index:1;background:linear-gradient(90deg,transparent,#d0c9a688,transparent)}
-.countdown-atmosphere{position:absolute;inset:0;z-index:-1;overflow:hidden;pointer-events:none;background:radial-gradient(ellipse at 50% 5%,#263e31 0%,#172621 45%,#101916 85%)}
-.countdown-atmosphere::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at center,#10191666 0%,transparent 70%),linear-gradient(0deg,#101412a8 0%,transparent 34%,transparent 78%,#10141266 100%);pointer-events:none}
-.countdown-glow{position:absolute;inset:-65% -35%;background:radial-gradient(ellipse at 24% 43%,#799b5c66 0%,transparent 29%),radial-gradient(ellipse at 73% 65%,#426f6766 0%,transparent 30%),radial-gradient(ellipse at 57% 19%,#bfa56c44 0%,transparent 26%);transform-origin:center;animation:countdown-aurora 24s ease-in-out infinite alternate}
-.countdown-mist{position:absolute;inset:-65% -35%;background:radial-gradient(ellipse at 33% 70%,#a7b77a38 0%,transparent 25%),radial-gradient(ellipse at 77% 22%,#457e7355 0%,transparent 30%),radial-gradient(ellipse at 52% 51%,#6a8b4a30 0%,transparent 23%);animation:countdown-mist 34s ease-in-out infinite alternate}
-.countdown-stars{position:absolute;inset:-60px;background-image:radial-gradient(circle at 18px 23px,#e2e5b98c 0 1px,transparent 1.6px),radial-gradient(circle at 93px 72px,#b8d0a065 0 1px,transparent 1.7px),radial-gradient(circle at 151px 42px,#e2e5b94d 0 .7px,transparent 1.4px),radial-gradient(circle at 49px 122px,#d6e6ba40 0 1px,transparent 1.6px);background-size:193px 149px,257px 183px,311px 217px,367px 271px;opacity:.7;animation:countdown-dust 38s linear infinite alternate}
-.launch-countdown-unit>span{text-shadow:0 0 38px #cadbb324,0 3px 20px #0005}
+/* Countdown atmosphere — turbulent wind, airborne ash and storm light. */
+.launch-countdown{isolation:isolate;background:#101714}
+.launch-countdown::before{z-index:1;background:linear-gradient(90deg,transparent,#d0c9a6aa,transparent)}
+.countdown-atmosphere{position:absolute;inset:0;z-index:-1;overflow:hidden;pointer-events:none;background:radial-gradient(ellipse at 75% 20%,#3d4931 0%,#202d25 35%,#121b18 80%)}
+.countdown-atmosphere::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at center,#10141266 0%,transparent 64%),linear-gradient(0deg,#101412a8 0%,transparent 30%,transparent 80%,#10141255 100%);pointer-events:none}
+.countdown-glow{position:absolute;inset:-80% -45%;background:radial-gradient(ellipse at 24% 43%,#8b9f5b88 0%,transparent 29%),radial-gradient(ellipse at 73% 65%,#426f6777 0%,transparent 30%),radial-gradient(ellipse at 57% 19%,#bfa56c55 0%,transparent 26%);animation:countdown-aurora 11s ease-in-out infinite alternate}
+.countdown-mist{position:absolute;inset:-90% -70%;background:radial-gradient(ellipse at 30% 56%,#a8b77a44 0%,transparent 23%),radial-gradient(ellipse at 70% 42%,#71948a55 0%,transparent 24%),radial-gradient(ellipse at 49% 60%,#6f7d4c44 0%,transparent 22%);animation:countdown-mist 8s ease-in-out infinite alternate}
+.countdown-wind{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}
+.launch-countdown-unit>span{text-shadow:0 0 38px #cadbb324,0 3px 20px #0008}
 .launch-countdown-kicker{text-shadow:0 0 22px #b6d4a53b}
-@keyframes countdown-aurora{0%{transform:translate3d(-6%,1%,0) rotate(-9deg) scale(1);opacity:.75}100%{transform:translate3d(8%,-5%,0) rotate(12deg) scale(1.13);opacity:1}}
-@keyframes countdown-mist{0%{transform:translate3d(7%,-4%,0) rotate(8deg);opacity:.4}100%{transform:translate3d(-9%,5%,0) rotate(-12deg) scale(1.1);opacity:.85}}
-@keyframes countdown-dust{0%{transform:translate3d(-10px,24px,0)}100%{transform:translate3d(34px,-35px,0)}}
+@keyframes countdown-aurora{0%{transform:translate3d(-9%,3%,0) rotate(-12deg);opacity:.75}100%{transform:translate3d(10%,-5%,0) rotate(14deg) scale(1.14);opacity:1}}
+@keyframes countdown-mist{0%{transform:translate3d(-16%,7%,0) rotate(-12deg) scale(1,.8);opacity:.5}100%{transform:translate3d(16%,-8%,0) rotate(-22deg) scale(1.2,.75);opacity:.95}}
 .launch-countdown.is-paused .countdown-atmosphere>div{animation-play-state:paused}
 .countdown-pause{position:absolute;bottom:15px;right:24px;display:grid;place-items:center;width:33px;height:33px;padding:0;border:1px solid #b1c1a34d;border-radius:7px;background:#10141288;color:#d2ddc7;opacity:.75;transition:opacity .2s,background .2s}
 .countdown-pause:hover,.countdown-pause:focus-visible{opacity:1;background:#101412d9}.countdown-pause svg{width:16px;height:16px}.countdown-pause[hidden]{display:none}
