@@ -102,6 +102,14 @@ if(launchTarget){
   const status=document.getElementById('launch-countdown-status'),heading=document.getElementById('launch-countdown-heading');
   const launchDigitMotion=matchMedia('(prefers-reduced-motion: reduce)');
   const launchClock=document.querySelector('.launch-countdown-clock');
+  const footerLaunchCountdown=document.getElementById('footer-launch-countdown');
+  const footerLaunchLabel=document.getElementById('footer-launch-label');
+  const footerLaunchTime=document.getElementById('footer-launch-time');
+  function updateFooterLaunchVisibility(){
+    footerLaunchCountdown.hidden=!document.getElementById('home').hidden;
+  }
+  window.addEventListener('hashchange',updateFooterLaunchVisibility);
+  updateFooterLaunchVisibility();
   let lastLaunchRemaining=null;
   let launchTimer=null;
   function updateLaunchCountdown(){
@@ -110,7 +118,12 @@ if(launchTarget){
     const animate=!launchDigitMotion.matches&&!document.hidden&&!document.getElementById('home').hidden&&!document.querySelector('.launch-countdown').classList.contains('is-paused');
     [hours,minutes,seconds].forEach((element,i)=>renderLaunchDigits(element,String(values[i]).padStart(2,'0'),animate));
     if(remaining!==lastLaunchRemaining){
-      launchClock.setAttribute('aria-label','Time until scheduled launch: '+values[0]+' hours, '+values[1]+' minutes, '+values[2]+' seconds');
+      const accessibleTime='Time until scheduled launch: '+values[0]+' hours, '+values[1]+' minutes, '+values[2]+' seconds';
+      launchClock.setAttribute('aria-label',accessibleTime);
+      footerLaunchTime.textContent=values.map(value=>String(value).padStart(2,'0')).join(':');
+      footerLaunchTime.setAttribute('aria-label',accessibleTime);
+      footerLaunchLabel.textContent=remaining===0?'Scheduled launch time reached':'Launch in';
+      footerLaunchTime.hidden=remaining===0;
       lastLaunchRemaining=remaining;
     }
     if(remaining===0){
