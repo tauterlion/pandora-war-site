@@ -122,3 +122,14 @@
 .countdown-pause:hover,.countdown-pause:focus-visible{opacity:1;background:#101412d9}.countdown-pause svg{width:16px;height:16px}.countdown-pause[hidden]{display:none}
 @media(max-width:500px){.countdown-pause{bottom:9px;right:10px;width:27px;height:27px}.countdown-pause svg{width:13px;height:13px}.launch-countdown{padding-bottom:43px}}
 @media(prefers-reduced-motion:reduce){.countdown-atmosphere>div{animation:none!important;transform:none!important}.countdown-pause{display:none!important}}
+
+/* Downward odometer motion: only the changed place values roll. */
+.launch-countdown-unit>span{display:inline-flex;align-items:center;justify-content:center;line-height:1.12}
+.launch-countdown-colon{line-height:1.12}
+.launch-digit{display:block;position:relative;width:1ch;height:1.12em;overflow:hidden;flex:none}
+.launch-digit-face{display:block;position:absolute;inset:0;text-align:center;line-height:1.12}
+.launch-digit-in{animation:launch-digit-enter .36s cubic-bezier(.2,.7,.25,1) both}
+.launch-digit-out{animation:launch-digit-exit .36s cubic-bezier(.2,.7,.25,1) both}
+@keyframes launch-digit-enter{from{transform:translateY(-100%);opacity:.65}to{transform:translateY(0);opacity:1}}
+@keyframes launch-digit-exit{from{transform:translateY(0);opacity:1}to{transform:translateY(100%);opacity:.65}}
+@media(prefers-reduced-motion:reduce){.launch-digit-in{animation:none!important;transform:none!important}.launch-digit-out{display:none!important}}
