@@ -86,3 +86,24 @@ if(launchTarget){
   document.addEventListener('visibilitychange',()=>{if(!document.hidden)updateLaunchCountdown();});
   window.addEventListener('pageshow',updateLaunchCountdown);
 }
+
+// Independent atmosphere control; do not animate when the page is hidden.
+const countdownSection=document.querySelector('.launch-countdown');
+const countdownPause=document.querySelector('.countdown-pause');
+if(countdownSection&&countdownPause){
+  const countdownMotion=matchMedia('(prefers-reduced-motion: reduce)');
+  let countdownPaused=false;
+  function updateCountdownAtmosphere(){
+    const paused=countdownPaused||countdownMotion.matches;
+    countdownSection.classList.toggle('is-paused',paused||document.hidden||document.getElementById('home').hidden);
+    countdownPause.innerHTML=paused?playIcon:pauseIcon;
+    countdownPause.setAttribute('aria-label',paused?'Play countdown background animation':'Pause countdown background animation');
+    countdownPause.title=countdownPause.getAttribute('aria-label');
+    countdownPause.hidden=countdownMotion.matches;
+  }
+  countdownPause.addEventListener('click',()=>{countdownPaused=!countdownPaused;updateCountdownAtmosphere();});
+  countdownMotion.addEventListener('change',updateCountdownAtmosphere);
+  document.addEventListener('visibilitychange',updateCountdownAtmosphere);
+  window.addEventListener('hashchange',updateCountdownAtmosphere);
+  updateCountdownAtmosphere();
+}
