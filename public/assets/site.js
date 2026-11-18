@@ -87,15 +87,85 @@ if(launchTarget){
   window.addEventListener('pageshow',updateLaunchCountdown);
 }
 
-// Independent atmosphere control; do not animate when the page is hidden.
+// Wind simulation: shared gusts, local eddies and independent particle inertia.
+function createCountdownWind(canvas){
+  const ctx=canvas.getContext('2d');
+  if(!ctx)return {setRunning(){}};
+  const rand=(a,b)=>a+Math.random()*(b-a);
+  const colors=['#e3e9ca','#b6cbaa','#e4c589','#8db5aa','#d6deba'];
+  let w=0,h=0,ratio=1,particles=[],frame=null,last=null,time=0,running=false;
+  function spawn(p,initial=false){
+    p.depth=rand(.35,1.3);p.phase=rand(0,Math.PI*2);p.spin=rand(.8,3.7);
+    p.size=rand(.6,1.75)*p.depth;p.alpha=rand(.2,.78);p.color=colors[Math.floor(rand(0,colors.length))];
+    if(initial){p.x=rand(0,w);p.y=rand(0,h);}
+    else if(Math.random()<.75){p.x=rand(-65,-5);p.y=rand(-h*.1,h*1.2);}
+    else{p.x=rand(-w*.12,w*.86);p.y=h+rand(5,60);}
+    p.vx=rand(90,230)*p.depth;p.vy=rand(-90,25)*p.depth;
+    return p;
+  }
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    for(const p of particles){
+      const speed=Math.hypot(p.vx,p.vy)||1;
+      const trail=Math.min(24,speed*.035)*p.depth;
+      const dx=p.vx/speed*trail,dy=p.vy/speed*trail;
+      ctx.strokeStyle=p.color;ctx.fillStyle=p.color;ctx.lineWidth=p.size;
+      ctx.globalAlpha=p.alpha*.52;ctx.beginPath();ctx.moveTo(p.x-dx,p.y-dy);ctx.lineTo(p.x,p.y);ctx.stroke();
+      ctx.globalAlpha=p.alpha;ctx.beginPath();ctx.arc(p.x,p.y,p.size*.48,0,Math.PI*2);ctx.fill();
+    }
+    ctx.globalAlpha=1;
+  }
+  function resize(){
+    const bounds=canvas.getBoundingClientRect();
+    if(bounds.width<1||bounds.height<1)return;
+    w=bounds.width;h=bounds.height;ratio=Math.min(window.devicePixelRatio||1,1.5);
+    canvas.width=Math.round(w*ratio);canvas.height=Math.round(h*ratio);ctx.setTransform(ratio,0,0,ratio,0,0);
+    const count=Math.max(55,Math.min(220,Math.round(w*h/2300)));
+    particles=Array.from({length:count},()=>spawn({},true));draw();
+  }
+  function animate(now){
+    frame=null;
+    if(!running)return;
+    const dt=last===null?0:Math.min(.04,(now-last)/1000);last=now;time+=dt;
+    // Gusts build and collapse; turbulence varies with location and each particle's depth.
+    const gust=180+135*Math.pow(.5+.5*Math.sin(time*1.16),3)+85*Math.pow(.5+.5*Math.sin(time*2.37+1.4),4);
+    for(const p of particles){
+      const eddy=Math.sin(p.x*.009+p.y*.018-time*2.1+p.phase);
+      const cross=Math.cos(p.y*.025-p.x*.007+time*1.45+p.phase);
+      const targetX=(gust+92*eddy+47*Math.sin(time*p.spin+p.phase))*p.depth;
+      const targetY=(-48+115*cross+60*Math.sin(time*2.5+p.phase)+.16*(180-gust))*p.depth;
+      const response=Math.min(1,dt*(2.2+p.depth*2));
+      p.vx+=(targetX-p.vx)*response;p.vy+=(targetY-p.vy)*response;
+      p.x+=p.vx*dt;p.y+=p.vy*dt;
+      if(p.x>w+70||p.x<-100||p.y<-100||p.y>h+100)spawn(p);
+    }
+    draw();frame=requestAnimationFrame(animate);
+  }
+  function setRunning(value){
+    if(value===running)return;
+    running=value;last=null;
+    if(running){if(!w||!h)resize();frame=requestAnimationFrame(animate);}
+    else if(frame!==null){cancelAnimationFrame(frame);frame=null;}
+  }
+  if(typeof ResizeObserver==='function')new ResizeObserver(resize).observe(canvas);
+  else window.addEventListener('resize',resize);
+  resize();
+  return {setRunning};
+}
+
+// Pause both background layers and the canvas outside the visible home page.
 const countdownSection=document.querySelector('.launch-countdown');
 const countdownPause=document.querySelector('.countdown-pause');
 if(countdownSection&&countdownPause){
   const countdownMotion=matchMedia('(prefers-reduced-motion: reduce)');
-  let countdownPaused=false;
+  const countdownCanvas=countdownSection.querySelector('.countdown-wind');
+  const wind=countdownCanvas?createCountdownWind(countdownCanvas):{setRunning(){}};
+  let countdownPaused=false,countdownVisible=true;
   function updateCountdownAtmosphere(){
     const paused=countdownPaused||countdownMotion.matches;
-    countdownSection.classList.toggle('is-paused',paused||document.hidden||document.getElementById('home').hidden);
+    const running=!paused&&!document.hidden&&!document.getElementById('home').hidden&&countdownVisible;
+    countdownSection.classList.toggle('is-paused',!running);
+    wind.setRunning(running);
     countdownPause.innerHTML=paused?playIcon:pauseIcon;
     countdownPause.setAttribute('aria-label',paused?'Play countdown background animation':'Pause countdown background animation');
     countdownPause.title=countdownPause.getAttribute('aria-label');
@@ -105,5 +175,6 @@ if(countdownSection&&countdownPause){
   countdownMotion.addEventListener('change',updateCountdownAtmosphere);
   document.addEventListener('visibilitychange',updateCountdownAtmosphere);
   window.addEventListener('hashchange',updateCountdownAtmosphere);
+  if(typeof IntersectionObserver==='function')new IntersectionObserver(entries=>{countdownVisible=entries[0].isIntersecting;updateCountdownAtmosphere();}).observe(countdownSection);
   updateCountdownAtmosphere();
 }
