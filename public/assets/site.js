@@ -60,6 +60,18 @@ function updateHeroTimer(){if(heroTimer!==null){clearTimeout(heroTimer);heroRema
 heroPause.addEventListener('click',()=>{heroPaused=!heroPaused;updateHeroTimer();});heroMotion.addEventListener('change',e=>{heroPaused=e.matches;updateHeroTimer();});document.addEventListener('visibilitychange',updateHeroTimer);window.addEventListener('hashchange',updateHeroTimer);updateHeroTimer();
 
 const copyAddress=document.getElementById('copyAddress');const copyStatus=document.getElementById('copyStatus');if(copyAddress&&copyStatus&&document.getElementById('serverAddress'))copyAddress.addEventListener('click',async()=>{const value=document.getElementById('serverAddress').textContent.trim();let ok=false;try{if(navigator.clipboard){await navigator.clipboard.writeText(value);ok=true;}}catch{}if(!ok){const input=document.createElement('textarea');input.value=value;input.style.cssText='position:fixed;left:-9999px;top:0';document.body.append(input);input.select();try{ok=document.execCommand('copy')}catch{}input.remove();}copyStatus.textContent=ok?'Server address copied.':'Copy unavailable — select the address manually.';copyAddress.querySelector('span').textContent=ok?'Copied':'Copy';if(ok)setTimeout(()=>{copyAddress.querySelector('span').textContent='Copy';copyStatus.textContent='';},2500);});
+// Homepage launch announcement uses the same address as the installation guide.
+const homeCopyAddress=document.getElementById('homeCopyAddress');
+const homeServerAddress=document.getElementById('homeServerAddress');
+const homeCopyStatus=document.getElementById('homeCopyStatus');
+if(homeCopyAddress&&homeServerAddress&&homeCopyStatus)homeCopyAddress.addEventListener('click',async()=>{
+  const value=homeServerAddress.textContent.trim();let ok=false;
+  try{if(navigator.clipboard){await navigator.clipboard.writeText(value);ok=true;}}catch{}
+  if(!ok){const input=document.createElement('textarea');input.value=value;input.style.cssText='position:fixed;left:-9999px;top:0';document.body.append(input);input.select();try{ok=document.execCommand('copy')}catch{}input.remove();}
+  homeCopyStatus.textContent=ok?'Server address copied.':'Copy unavailable — select the address manually.';
+  homeCopyAddress.textContent=ok?'Copied!':'Copy address';
+  if(ok)setTimeout(()=>{homeCopyAddress.textContent='Copy address';homeCopyStatus.textContent='';},2500);
+});
 // Sequential reading links, without introducing extra pages.
 pages.slice(1).forEach(([id],i)=>{const article=document.querySelector('#'+id+' .article'),prev=pages[i],next=pages[i+2],nav=document.createElement('nav');nav.className='guide-page-nav';nav.setAttribute('aria-label','Continue reading');nav.innerHTML=`<a href="#${prev[0]}"><span>← Previous</span><strong>${prev[1]}</strong></a>`+(next?`<a href="#${next[0]}"><span>Next →</span><strong>${next[1]}</strong></a>`:'');article.append(nav);});
 
